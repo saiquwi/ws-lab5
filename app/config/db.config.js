@@ -8,6 +8,12 @@ module.exports = {
   DB: process.env.DB_NAME || "postgres",
   SCHEMA: process.env.DB_SCHEMA || "wslab5",
   dialect: "postgres",
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false
+  },
   pool: {
     max: 5,
     min: 0,
