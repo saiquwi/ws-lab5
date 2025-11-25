@@ -19,8 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     }
-  }, {
-    schema: process.env.DB_SCHEMA || 'wslab5'
   });
 
   RefreshToken.createToken = async function (user) {

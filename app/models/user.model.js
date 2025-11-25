@@ -28,8 +28,6 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true
     }
-  }, {
-    schema: process.env.DB_SCHEMA || 'wslab5'
   });
 
   return User;
