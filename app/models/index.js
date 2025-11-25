@@ -2,24 +2,18 @@ const config = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(
-  config.DB,
-  config.USER,
-  config.PASSWORD,
+  process.env.DB_NAME || config.DB,
+  process.env.DB_USER || config.USER, 
+  process.env.DB_PASSWORD || config.PASSWORD,
   {
-    host: config.HOST,
-    port: config.PORT,
+    host: process.env.DB_HOST || config.HOST,
     dialect: config.dialect,
+    dialectOptions: config.dialectOptions,
     pool: {
       max: config.pool.max,
       min: config.pool.min,
       acquire: config.pool.acquire,
       idle: config.pool.idle
-    },
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    // Настройка схемы
-    schema: config.SCHEMA,
-    define: {
-      schema: config.SCHEMA
     }
   }
 );
