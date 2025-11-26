@@ -114,11 +114,11 @@ jobs:
         echo "Production is healthy"
 
   rollback:
-  runs-on: ubuntu-latest
-  if: failure()
-  needs: [test, deploy-staging, deploy-production]
-  
-  steps:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [test, deploy-staging, deploy-production]
+    
+    steps:
     - name: Rollback Production on Render
       uses: johnbeynon/render-deploy-action@v0.0.8
       with:
