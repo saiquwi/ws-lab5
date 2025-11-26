@@ -24,15 +24,15 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('Health Check', () => {
-    it('should return server status', async () => {
+    'should return server status', async () => {
       const response = await request(app).get('/test-health');
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('status', 'OK');
-    });
+    };
   });
 
   describe('Public Routes', () => {
-    it(' access public content', async () => {
+    it('should access public content', async () => {
       const response = await request(app).get('/api/test/all');
       expect(response.status).toBe(200);
     });
