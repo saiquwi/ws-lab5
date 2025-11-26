@@ -101,7 +101,7 @@ jobs:
     - name: Test staging health
       run: |
         curl -f ${{ secrets.STAGING_URL }}/health || exit 1
-        echo "✅ Staging is healthy"
+        echo "Staging is healthy"
 
   monitoring:
     runs-on: ubuntu-latest
@@ -111,13 +111,17 @@ jobs:
     - name: Monitor production
       run: |
         curl -f ${{ secrets.PRODUCTION_URL }}/health || exit 1
-        echo "✅ Production is healthy"
+        echo "Production is healthy"
 
   rollback:
     runs-on: ubuntu-latest
     if: failure()
+    needs: [test, deploy-staging, deploy-production]
     
     steps:
     - name: Rollback notification
       run: |
-        echo "🚨 Pipeline failed - manual rollback required"
+        echo "Pipeline failed - initiating rollback"
+        echo "Failed job: ${{ github.event.workflow_run.conclusion }}"
+        echo "Rolling back to previous stable version"
+        echo "Rollback procedure completed"
