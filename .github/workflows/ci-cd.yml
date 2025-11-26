@@ -114,14 +114,26 @@ jobs:
         echo "Production is healthy"
 
   rollback:
-    runs-on: ubuntu-latest
-    if: failure()
-    needs: [test, deploy-staging, deploy-production]
+  runs-on: ubuntu-latest
+  if: failure()
+  needs: [test, deploy-staging, deploy-production]
+  
+  steps:
+    - name: Rollback Production on Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID_PRODUCTION }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        deploy-id: previous
     
-    steps:
-    - name: Rollback notification
+    - name: Rollback Staging on Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID_STAGING }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        deploy-id: previous
+    
+    - name: Send rollback notification
       run: |
-        echo "Pipeline failed - initiating rollback"
-        echo "Failed job: ${{ github.event.workflow_run.conclusion }}"
-        echo "Rolling back to previous stable version"
-        echo "Rollback procedure completed"
+        echo "Production rolled back to previous version"
+        echo "Staging rolled back to previous version"
