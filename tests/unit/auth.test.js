@@ -45,4 +45,9 @@ describe('Auth Unit Tests', () => {
       expect(bcrypt.compareSync('wrongpassword', hashed)).toBe(false);
     });
   });
+
+  //падающий тест
+  test('should fail intentionally', () => {
+    expect(true).toBe(false);
+  });
 });
