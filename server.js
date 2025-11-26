@@ -16,6 +16,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(express.static('.'));
+
 console.log('=== RENDER ENVIRONMENT CHECK ===');
 console.log('DB_HOST:', process.env.DB_HOST || 'NOT SET');
 console.log('DB_USER:', process.env.DB_USER || 'NOT SET'); 
@@ -39,11 +41,17 @@ db.sequelize.sync({ force: false }).then(() => {
 
 // Маршруты
 app.get("/", (req, res) => {
-  res.json({ 
-    message: "web-services lab 5",
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
-  });
+  // Если есть index.html и мы в production - показываем HTML
+  if (process.env.NODE_ENV === 'production' && require('fs').existsSync('./index.html')) {
+    res.sendFile(__dirname + '/index.html');
+  } else {
+    // Иначе показываем JSON (для staging/development)
+    res.json({ 
+      message: "web-services lab 5",
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Health check
