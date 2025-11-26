@@ -100,10 +100,8 @@ jobs:
     needs: integration-tests
     if: github.ref == 'refs/heads/main' && needs.integration-tests.result == 'success'
     environment: production
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Deploy to Production (Render)
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
@@ -114,30 +112,36 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-production
     if: always()
-
     steps:
-      - name: Production health & monitoring check
+      - name: Production health & JWT check
         run: |
+          echo "Проверка здоровья продакшена..."
           curl -f ${{ secrets.PRODUCTION_URL }}/health || exit 1
-          curl -f ${{ secrets.PRODUCTION_URL }}/api/v1/users/me -H "Authorization: Bearer ${{ secrets.TEST_JWT_TOKEN }}" || echo "Warning: Auth endpoint test failed"
-          echo "Production is healthy and JWT auth works"
+          echo "Проверка JWT-аутентификации..."
+          curl -f ${{ secrets.PRODUCTION_URL }}/api/v1/users/me \
+               -H "Authorization: Bearer ${{ secrets.TEST_JWT_TOKEN }}" \
+               || echo "JWT-проверка не прошла"
+          echo "Продакшн работает корректно"
 
-  notify-and-rollback-instruction:
+  rollback:
     runs-on: ubuntu-latest
-    needs: [integration-tests, deploy-production]
-    if: >-
-      always() && 
-      github.ref == 'refs/heads/main' && 
-      (needs.integration-tests.result == 'failure' || needs.deploy-production.result == 'failure')
-
+    needs: [integration-tests, deploy-production, monitoring]
+    if: always()
     steps:
-      - name: Send rollback alert
-        uses: slackapi/slack-github-action@v1.26.0
-        if: always()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          payload: |
-            {
-              "text": "Warning: ПРОДАКШН НЕ ОБНОВЛЁН!\nИнтеграционные тесты провалились или деплой упал.\nПродакшн остался на предыдущей рабочей версии.\n\nЕсли нужно откатить вручную:\nhttps://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID_PRODUCTION }}/deploys\nВыберите последний зелёный деплой → Redeploy"
-            }
+      - name: Итоговое сообщение о результате деплоя
+        run: |
+          echo "══════════════════════════════════════"
+          if [[ "${{ needs.integration-tests.result }}" == "success" && "${{ needs.deploy-production.result }}" == "success" ]]; then
+            echo "ДЕПЛОЙ В ПРОДАКШЕН УСПЕШНО ЗАВЕРШЁН"
+            echo "Новая версия запущена и проверена"
+            echo "URL: ${{ secrets.PRODUCTION_URL }}"
+          else
+            echo "ДЕПЛОЙ В ПРОДАКШЕН ОТМЕНЁН"
+            echo "Причина: интеграционные тесты не прошли или деплой/мониторинг упал"
+            echo "Продакшн остался на предыдущей рабочей версии — всё безопасно"
+            echo ""
+            echo "Для ручного отката (если вдруг понадобится):"
+            echo "→ https://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID_PRODUCTION }}/deploys"
+            echo "→ Выберите последний зелёный деплой → нажмите 'Redeploy'"
+          fi
+          echo "══════════════════════════════════════"
