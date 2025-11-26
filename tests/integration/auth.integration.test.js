@@ -32,7 +32,7 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('Public Routes', () => {
-    it('should access public content', async () => {
+    ('should access public content', async () => {
       const response = await request(app).get('/api/test/all');
       expect(response.status).toBe(200);
     });
