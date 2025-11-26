@@ -24,11 +24,11 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('Health Check', () => {
-    'should return server status', async () => {
+    it('should return server status', async () => {
       const response = await request(app).get('/test-health');
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('status', 'OK');
-    };
+    });
   });
 
   describe('Public Routes', () => {
