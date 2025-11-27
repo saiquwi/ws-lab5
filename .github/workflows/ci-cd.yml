@@ -117,18 +117,11 @@ jobs:
     steps:
       - name: Итоговое сообщение о результате деплоя
         run: |
-          echo "══════════════════════════════════════"
           if [[ "${{ needs.integration-tests.result }}" == "success" && "${{ needs.deploy-production.result }}" == "success" ]]; then
-            echo "ДЕПЛОЙ В ПРОДАКШЕН УСПЕШНО ЗАВЕРШЁН"
-            echo "Новая версия запущена и проверена"
+            echo "Deploy to production is completed"
             echo "URL: ${{ secrets.PRODUCTION_URL }}"
           else
-            echo "ДЕПЛОЙ В ПРОДАКШЕН ОТМЕНЁН"
-            echo "Причина: интеграционные тесты не прошли или деплой/мониторинг упал"
-            echo "Продакшн остался на предыдущей рабочей версии — всё безопасно"
-            echo ""
-            echo "Для ручного отката (если вдруг понадобится):"
+            echo "Deploy to production is cancelled"
+            echo "For manual rollback:"
             echo "→ https://dashboard.render.com/web/${{ secrets.RENDER_SERVICE_ID_PRODUCTION }}/deploys"
-            echo "→ Выберите последний зелёный деплой → нажмите 'Redeploy'"
           fi
-          echo "══════════════════════════════════════"
