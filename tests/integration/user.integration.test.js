@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../../server');
+const { app, TEST_PORT } = require('../../test-server');
 const db = require('../../app/models');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../../app/config/auth.config');

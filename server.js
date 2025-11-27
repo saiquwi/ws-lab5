@@ -18,26 +18,19 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('.'));
 
-console.log('=== RENDER ENVIRONMENT CHECK ===');
-console.log('DB_HOST:', process.env.DB_HOST || 'NOT SET');
-console.log('DB_USER:', process.env.DB_USER || 'NOT SET'); 
-console.log('DB_NAME:', process.env.DB_NAME || 'NOT SET');
-console.log('NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
-console.log('PORT:', process.env.PORT || 'NOT SET');
-console.log('=================================');
-
 const db = require("./app/models");
 const Role = db.role;
 
 // Инициализация БД
-db.sequelize.sync({ force: false }).then(() => {
-  console.log('Database synced successfully');
-  initial();
-}).catch(err => {
-  console.error('Database connection ERROR:', err.message);
-  console.error('Full error:', err);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== 'test') {
+  db.sequelize.sync({ force: false }).then(() => {
+    console.log('Database synced successfully');
+    initial();
+  }).catch(err => {
+    console.error('Database connection ERROR:', err.message);
+    process.exit(1);
+  });
+}
 
 // Маршруты
 app.get("/", (req, res) => {

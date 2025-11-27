@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app } = require('../../test-server');
+const { app, TEST_PORT } = require('../../test-server');
 const db = require('../../app/models');
 
 describe('Lab 5 Basic Tests', () => {
