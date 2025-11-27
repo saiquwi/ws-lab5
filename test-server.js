@@ -11,7 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 
-// Тестовые маршруты
 app.get("/test-health", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -28,11 +27,17 @@ app.get("/test-data", [require("./app/middleware/authJwt").verifyTokenAndIp], (r
   });
 });
 
-// Тестовые auth routes
+app.get("/datalab5", require("./app/middleware/authJwt").verifyTokenAndIp, (req, res) => {
+  res.json({ 
+    message: "Lab 5 protected data",
+    user: req.userId,
+    timestamp: new Date().toISOString()
+  });
+});
+
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 
 const TEST_PORT = process.env.TEST_PORT || 8081;
 
-// Экспортируем app для тестов, но не запускаем сервер автоматически
 module.exports = { app, TEST_PORT };
