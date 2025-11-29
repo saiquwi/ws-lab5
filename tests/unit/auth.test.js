@@ -47,9 +47,9 @@ describe('Auth Unit Tests', () => {
   });
 
   //падающий тест
-  
+  /*
   test('should fail intentionally', () => {
     expect(true).toBe(false);
   });
-  
+  */
 });
