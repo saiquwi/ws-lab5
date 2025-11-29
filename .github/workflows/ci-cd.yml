@@ -25,14 +25,6 @@ jobs:
 
       - name: Run unit tests
         run: npm run test:unit
-        env:
-          NODE_ENV: test
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: ws4sem
-          DB_PASSWORD: ws4sem123
-          DB_NAME: wslab5
-          JWT_SECRET: super-secret-jwt-key-for-tests
 
   deploy-staging:
     runs-on: ubuntu-latest
